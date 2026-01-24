@@ -1,9 +1,8 @@
 [build]
-command = "pip install -r requirements.txt"
-functions = "functions"
 publish = "src/stegovault/ui/web/static"
+command = ""
 
 [[redirects]]
 from = "/*"
-to = "/.netlify/functions/app/:splat"
+to = "/index.html"
 status = 200
