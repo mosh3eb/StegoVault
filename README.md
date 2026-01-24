@@ -1,5 +1,9 @@
 # 🔐 StegoVault
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/mosh3eb/StegoVault/refs/heads/main/src/stegovault/ui/gui/assets/logo.png" width="90%">
+</p>
+
 > **Advanced Steganography & Encryption Toolkit**
 > 
 > Hide secrets inside images with military-grade encryption and anti-detection features.
