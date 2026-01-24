@@ -1,0 +1,11 @@
+{
+  "include": ["src"],
+  "pythonVersion": "3.10",
+  "pythonPath": "./src",
+  "typeCheckingMode": "basic",
+  "reportMissingImports": true,
+  "reportMissingTypeStubs": false,
+  "venvPath": ".",
+  "exclude": ["**/node_modules", "**/__pycache__", "build", "dist", ".git"],
+  "ignore": ["**/__init__.py"]
+}
