@@ -1,350 +1,334 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StegoVault - Web Interface</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            overflow: hidden;
-        }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        .tabs {
-            display: flex;
-            background: #f5f5f5;
-            border-bottom: 2px solid #ddd;
-        }
-        .tab {
-            flex: 1;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            background: #f5f5f5;
-            border: none;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-        .tab:hover {
-            background: #e0e0e0;
-        }
-        .tab.active {
-            background: white;
-            border-bottom: 3px solid #667eea;
-            font-weight: bold;
-        }
-        .tab-content {
-            display: none;
-            padding: 30px;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-        }
-        input[type="file"], input[type="text"], input[type="password"], select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-        input[type="file"] {
-            padding: 8px;
-        }
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            transition: transform 0.2s;
-        }
-        button:hover {
-            transform: translateY(-2px);
-        }
-        button:active {
-            transform: translateY(0);
-        }
-        .info-display {
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 5px;
-            margin-top: 20px;
-            white-space: pre-wrap;
-            font-family: monospace;
-        }
-        .error {
-            color: #e74c3c;
-            margin-top: 10px;
-            padding: 10px;
-            background: #ffe6e6;
-            border-radius: 5px;
-        }
-        .success {
-            color: #27ae60;
-            margin-top: 10px;
-            padding: 10px;
-            background: #e6ffe6;
-            border-radius: 5px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🔐 StegoVault</h1>
-            <p>Advanced Steganography Tool</p>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ app_name }} Web • v{{ app_version }}</title>
+    <link rel="icon" href="{{ logo_path }}" />
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body style="background: {{ brand_bg }};">
+    <div class="app">
+      <header class="header">
+        <div class="brand">
+          <img class="brand-logo" src="{{ logo_path }}" alt="{{ app_name }} logo" />
+          <div class="brand-text">
+            <div class="brand-title">{{ app_name }} <span class="muted">Web</span></div>
+            <div class="brand-subtitle">Advanced Steganography Tool • v{{ app_version }}</div>
+          </div>
         </div>
-        
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('embed')">Embed File</button>
-            <button class="tab" onclick="switchTab('extract')">Extract File</button>
-            <button class="tab" onclick="switchTab('info')">View Info</button>
+        <div class="header-right">
+          <a class="pill" href="https://github.com" target="_blank" rel="noreferrer">Repo</a>
         </div>
-        
-        <!-- Embed Tab -->
-        <div id="embed" class="tab-content active">
-            <form id="embedForm" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label>File to Embed:</label>
-                    <input type="file" name="file" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Cover Image (Optional):</label>
-                    <input type="file" name="cover_image" accept="image/*">
-                </div>
-                
-                <div class="form-group">
-                    <label>Password (Optional):</label>
-                    <input type="password" name="password" placeholder="Leave empty for no encryption">
-                </div>
-                
-                <div class="form-group">
-                    <label>Mode:</label>
-                    <select name="mode">
-                        <option value="pixel">Pixel Mode</option>
-                        <option value="lsb">LSB Mode (More Stealthy)</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <div class="checkbox-group">
-                        <input type="checkbox" name="compression" id="compression" value="true">
-                        <label for="compression">Compress data</label>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Output Filename (Optional):</label>
-                    <input type="text" name="output_filename" placeholder="Auto-generated if empty">
-                </div>
-                
-                <button type="submit">Embed File</button>
-                <div id="embedResult"></div>
+      </header>
+
+      <div class="content">
+        <aside class="side">
+          <div class="card">
+            <div class="card-title">Status & Intelligence</div>
+            <div id="status" class="status">
+              <div class="status-row"><span class="dot dot-ok"></span><span id="statusText">Ready</span></div>
+              <div class="status-kv"><span>Tip</span><span class="muted">Use LSB for stealth, Pixel for capacity</span></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">System Console</div>
+            <pre id="console" class="console">StegoVault Web ready.</pre>
+          </div>
+        </aside>
+
+        <main class="main">
+          <div class="tabs">
+            <button class="tab active" data-tab="embed">Embed</button>
+            <button class="tab" data-tab="embed-archive">Embed Archive</button>
+            <button class="tab" data-tab="extract">Extract</button>
+            <button class="tab" data-tab="extract-archive">Extract Archive</button>
+            <button class="tab" data-tab="info">View Info</button>
+            <button class="tab" data-tab="detect">Detect</button>
+            <button class="tab" data-tab="capacity">Capacity</button>
+            <button class="tab" data-tab="privacy">Privacy</button>
+            <button class="tab" data-tab="about">About</button>
+          </div>
+
+          <section class="panel active" id="tab-embed">
+            <div class="panel-title">Embed a file inside an image</div>
+            <form id="form-embed" class="form">
+              <div class="grid2">
+                <label class="field">
+                  <span>File to embed</span>
+                  <input name="payload" type="file" required />
+                </label>
+                <label class="field">
+                  <span>Cover image (optional)</span>
+                  <input name="cover" type="file" accept="image/*" />
+                </label>
+              </div>
+
+              <div class="grid3">
+                <label class="field">
+                  <span>Password (optional)</span>
+                  <input name="password" type="password" placeholder="AES-256 encryption" />
+                </label>
+                <label class="field">
+                  <span>Mode</span>
+                  <select name="mode">
+                    <option value="pixel">pixel (capacity)</option>
+                    <option value="lsb">lsb (stealth)</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Quality</span>
+                  <input name="quality" type="number" min="1" max="100" value="95" placeholder="95" />
+                  <small style="color: var(--muted); font-size: 11px;">Image quality (1-100)</small>
+                </label>
+              </div>
+              <div class="grid2">
+                <label class="field">
+                  <span>Options</span>
+                  <div class="checks">
+                    <label><input type="checkbox" name="compress" /> Compress</label>
+                    <label><input type="checkbox" name="robustness" /> Robustness</label>
+                    <label><input type="checkbox" name="anti_steganalysis" /> Anti-analysis <small style="color: var(--warn);">⚠ May affect extraction compatibility</small></label>
+                    <label><input type="checkbox" name="strip_metadata" /> Strip metadata</label>
+                  </div>
+                </label>
+              </div>
+
+              <div class="actions">
+                <button class="btn btn-primary" type="submit">Embed</button>
+                <a id="embed-download" class="btn btn-secondary hidden" href="#" download>Download output</a>
+              </div>
             </form>
-        </div>
-        
-        <!-- Extract Tab -->
-        <div id="extract" class="tab-content">
-            <form id="extractForm" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label>Stego Image:</label>
-                    <input type="file" name="image" accept="image/*" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Password (if encrypted):</label>
-                    <input type="password" name="password" placeholder="Leave empty if not encrypted">
-                </div>
-                
-                <div class="form-group">
-                    <label>Output Filename (Optional):</label>
-                    <input type="text" name="output_filename" placeholder="Uses original filename if empty">
-                </div>
-                
-                <button type="submit">Extract File</button>
-                <div id="extractResult"></div>
+          </section>
+
+          <section class="panel" id="tab-extract">
+            <div class="panel-title">Extract a hidden file from an image</div>
+            <form id="form-extract" class="form">
+              <div class="grid2">
+                <label class="field">
+                  <span>Stego image (PNG)</span>
+                  <input name="stego" type="file" accept="image/png" required />
+                  <small style="color: var(--muted); font-size: 11px; margin-top: 4px;">
+                    ⚠️ Use the exact PNG file from Embed. Don't modify, convert, or re-save it.
+                  </small>
+                </label>
+                <label class="field">
+                  <span>Password (if encrypted)</span>
+                  <input name="password" type="password" />
+                </label>
+              </div>
+              <div class="checks" style="margin-top: 12px;">
+                <label><input type="checkbox" name="verify" checked /> Verify file integrity after extraction</label>
+              </div>
+              <div class="actions">
+                <button class="btn btn-primary" type="submit">Extract</button>
+                <button id="extract-direct-btn" class="btn btn-secondary hidden" type="button">Extract from Server (No Upload)</button>
+                <a id="extract-download" class="btn btn-secondary hidden" href="#" download>Download extracted</a>
+              </div>
+              <div id="extract-token-container" class="hidden" style="margin-top: 12px; padding: 12px; background: rgba(9, 11, 41, 0.5); border-radius: 10px; font-size: 12px; color: var(--muted);">
+                <strong style="color: var(--text);">💡 Tip:</strong> After embedding, use "Extract from Server" to test extraction without downloading/re-uploading.
+              </div>
             </form>
-        </div>
-        
-        <!-- Info Tab -->
-        <div id="info" class="tab-content">
-            <form id="infoForm" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label>Stego Image:</label>
-                    <input type="file" name="image" accept="image/*" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Password (if encrypted):</label>
-                    <input type="password" name="password" placeholder="Leave empty if not encrypted">
-                </div>
-                
-                <button type="submit">View Info</button>
-                <div id="infoResult"></div>
+          </section>
+
+          <section class="panel" id="tab-detect">
+            <div class="panel-title">Detect steganography risk in an image</div>
+            <form id="form-detect" class="form">
+              <label class="field">
+                <span>Image</span>
+                <input name="image" type="file" accept="image/*" required />
+              </label>
+              <div class="actions">
+                <button class="btn btn-primary" type="submit">Analyze</button>
+              </div>
+              <pre id="detect-result" class="result">—</pre>
             </form>
-        </div>
+          </section>
+
+          <section class="panel" id="tab-capacity">
+            <div class="panel-title">Estimate capacity of a cover image</div>
+            <form id="form-capacity" class="form">
+              <div class="grid2">
+                <label class="field">
+                  <span>Cover image</span>
+                  <input name="image" type="file" accept="image/*" required />
+                </label>
+                <label class="field">
+                  <span>Mode</span>
+                  <select name="mode">
+                    <option value="lsb">lsb</option>
+                    <option value="pixel">pixel</option>
+                  </select>
+                </label>
+              </div>
+              <label class="field">
+                <span>Test file (optional - check if file fits)</span>
+                <input name="file" type="file" />
+              </label>
+              <div class="checks">
+                <label><input type="checkbox" name="compress" /> Account for compression</label>
+              </div>
+              <div class="actions">
+                <button class="btn btn-primary" type="submit">Calculate</button>
+              </div>
+              <pre id="capacity-result" class="result">—</pre>
+            </form>
+          </section>
+
+          <section class="panel" id="tab-privacy">
+            <div class="panel-title">Privacy scan (metadata / EXIF)</div>
+            <form id="form-privacy" class="form">
+              <div class="grid2">
+                <label class="field">
+                  <span>Image</span>
+                  <input name="image" type="file" accept="image/*" required />
+                </label>
+                <label class="field">
+                  <span>Options</span>
+                  <div class="checks">
+                    <label><input type="checkbox" name="strip" /> Strip metadata and download cleaned image</label>
+                  </div>
+                </label>
+              </div>
+              <div class="actions">
+                <button class="btn btn-primary" type="submit">Run scan</button>
+                <a id="privacy-download" class="btn btn-secondary hidden" href="#" download>Download cleaned</a>
+              </div>
+              <pre id="privacy-result" class="result">—</pre>
+            </form>
+          </section>
+
+          <section class="panel" id="tab-embed-archive">
+            <div class="panel-title">Embed multiple files/folders as an archive</div>
+            <form id="form-embed-archive" class="form">
+              <div class="grid2">
+                <label class="field">
+                  <span>Files to embed (multiple)</span>
+                  <input name="files" type="file" multiple required />
+                  <small style="color: var(--muted); font-size: 11px; margin-top: 4px;">
+                    Select multiple files to embed as an archive
+                  </small>
+                </label>
+                <label class="field">
+                  <span>Cover image (optional)</span>
+                  <input name="cover" type="file" accept="image/*" />
+                </label>
+              </div>
+
+              <div class="grid3">
+                <label class="field">
+                  <span>Password (optional)</span>
+                  <input name="password" type="password" placeholder="AES-256 encryption" />
+                </label>
+                <label class="field">
+                  <span>Mode</span>
+                  <select name="mode">
+                    <option value="pixel">pixel (capacity)</option>
+                    <option value="lsb">lsb (stealth)</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Quality</span>
+                  <input name="quality" type="number" min="1" max="100" value="95" placeholder="95" />
+                </label>
+              </div>
+              <div class="grid2">
+                <label class="field">
+                  <span>Options</span>
+                  <div class="checks">
+                    <label><input type="checkbox" name="compress" /> Compress</label>
+                    <label><input type="checkbox" name="robustness" /> Robustness</label>
+                    <label><input type="checkbox" name="anti_steganalysis" /> Anti-analysis</label>
+                    <label><input type="checkbox" name="strip_metadata" /> Strip metadata</label>
+                  </div>
+                </label>
+              </div>
+
+              <div class="actions">
+                <button class="btn btn-primary" type="submit">Embed Archive</button>
+                <a id="embed-archive-download" class="btn btn-secondary hidden" href="#" download>Download output</a>
+              </div>
+            </form>
+          </section>
+
+          <section class="panel" id="tab-extract-archive">
+            <div class="panel-title">Extract archive from an image</div>
+            <form id="form-extract-archive" class="form">
+              <div class="grid2">
+                <label class="field">
+                  <span>Stego image (PNG)</span>
+                  <input name="stego" type="file" accept="image/png" required />
+                </label>
+                <label class="field">
+                  <span>Password (if encrypted)</span>
+                  <input name="password" type="password" />
+                </label>
+              </div>
+              <div class="checks">
+                <label><input type="checkbox" name="robustness" checked /> Enable robustness recovery</label>
+              </div>
+              <div class="actions">
+                <button class="btn btn-primary" type="submit">Extract Archive</button>
+                <a id="extract-archive-download" class="btn btn-secondary hidden" href="#" download>Download archive (ZIP)</a>
+              </div>
+            </form>
+          </section>
+
+          <section class="panel" id="tab-info">
+            <div class="panel-title">View metadata from stego image</div>
+            <form id="form-info" class="form">
+              <div class="grid2">
+                <label class="field">
+                  <span>Stego image (PNG)</span>
+                  <input name="image" type="file" accept="image/png" required />
+                </label>
+                <label class="field">
+                  <span>Password (if encrypted)</span>
+                  <input name="password" type="password" />
+                </label>
+              </div>
+              <div class="actions">
+                <button class="btn btn-primary" type="submit">View Info</button>
+              </div>
+              <pre id="info-result" class="result">—</pre>
+            </form>
+          </section>
+
+          <section class="panel" id="tab-about">
+            <div class="panel-title">About</div>
+            <div class="card about">
+              <p><b>{{ app_name }}</b> web version provides full access to all features without installing Python.</p>
+              <ul>
+                <li><b>Embed</b>: Hide any file inside a PNG with encryption, compression, and advanced options.</li>
+                <li><b>Embed Archive</b>: Embed multiple files/folders as an archive in a single image.</li>
+                <li><b>Extract</b>: Recover a hidden file from a stego image with verification.</li>
+                <li><b>Extract Archive</b>: Extract multiple files from an archive embedded in an image.</li>
+                <li><b>View Info</b>: View metadata from stego images without extracting (file info, encryption status, etc.).</li>
+                <li><b>Detect</b>: Analyze images for steganography risk indicators and detection probability.</li>
+                <li><b>Capacity</b>: Calculate safe payload size for cover images, with optional file fit checking.</li>
+                <li><b>Privacy</b>: Inspect EXIF/GPS metadata and optionally strip it for privacy.</li>
+              </ul>
+              <p><b>Features:</b></p>
+              <ul>
+                <li>AES-256 encryption with password protection</li>
+                <li>Pixel and LSB embedding modes</li>
+                <li>Compression support</li>
+                <li>Robustness features for social media compatibility</li>
+                <li>Anti-steganalysis protection (histogram preservation)</li>
+                <li>Metadata stripping</li>
+                <li>Quality control (1-100)</li>
+                <li>File integrity verification</li>
+              </ul>
+              <p class="muted">Note: All operations run server-side and return downloadable results. Files are automatically cleaned up after a period of time.</p>
+            </div>
+          </section>
+        </main>
+      </div>
     </div>
-    
-    <script>
-        function switchTab(tabName) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // Show selected tab
-            document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
-        }
-        
-        document.getElementById('embedForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const resultDiv = document.getElementById('embedResult');
-            resultDiv.innerHTML = '<p>Processing...</p>';
-            
-            try {
-                const response = await fetch('/embed', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                if (response.ok) {
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = formData.get('output_filename') || 'stego_image.png';
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                    resultDiv.innerHTML = '<div class="success">File embedded successfully!</div>';
-                } else {
-                    const error = await response.json();
-                    resultDiv.innerHTML = `<div class="error">Error: ${error.error}</div>`;
-                }
-            } catch (error) {
-                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
-            }
-        });
-        
-        document.getElementById('extractForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const resultDiv = document.getElementById('extractResult');
-            resultDiv.innerHTML = '<p>Processing...</p>';
-            
-            try {
-                const response = await fetch('/extract', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                if (response.ok) {
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    const outputFilename = formData.get('output_filename');
-                    const contentDisposition = response.headers.get('Content-Disposition');
-                    let filename = outputFilename || 'extracted_file';
-                    if (contentDisposition) {
-                        const matches = contentDisposition.match(/filename="(.+)"/);
-                        if (matches) filename = matches[1];
-                    }
-                    a.download = filename;
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                    resultDiv.innerHTML = '<div class="success">File extracted successfully!</div>';
-                } else {
-                    const error = await response.json();
-                    resultDiv.innerHTML = `<div class="error">Error: ${error.error}</div>`;
-                }
-            } catch (error) {
-                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
-            }
-        });
-        
-        document.getElementById('infoForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const resultDiv = document.getElementById('infoResult');
-            resultDiv.innerHTML = '<p>Loading...</p>';
-            
-            try {
-                const response = await fetch('/info', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                if (response.ok) {
-                    const metadata = await response.json();
-                    let infoText = '📋 Image Metadata\n';
-                    infoText += '='.repeat(40) + '\n\n';
-                    infoText += `File Name: ${metadata.file_name}\n`;
-                    infoText += `File Size: ${metadata.file_size.toLocaleString()} bytes\n`;
-                    infoText += `Encrypted: ${metadata.encrypted ? 'Yes' : 'No'}\n`;
-                    infoText += `Compressed: ${metadata.compressed ? 'Yes' : 'No'}\n`;
-                    infoText += `Format Version: ${metadata.version}\n`;
-                    resultDiv.innerHTML = `<div class="info-display">${infoText}</div>`;
-                } else {
-                    const error = await response.json();
-                    resultDiv.innerHTML = `<div class="error">Error: ${error.error}</div>`;
-                }
-            } catch (error) {
-                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
-            }
-        });
-    </script>
-</body>
+
+    <script src="/static/app.js"></script>
+  </body>
 </html>
+
 
