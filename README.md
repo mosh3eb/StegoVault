@@ -53,9 +53,15 @@
 
 ### Installation
 
+**Option 1: From PyPI (Recommended)**
+```bash
+pip install stegovault
+```
+
+**Option 2: From Source**
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/StegoVault.git
+git clone https://github.com/mosh3eb/StegoVault.git
 cd StegoVault
 
 # Create virtual environment (recommended)
@@ -263,8 +269,8 @@ Never use this tool for:
 
 ## 🙋 Support & Questions
 
-- **Issues**: Report bugs on [GitHub Issues](https://github.com/yourusername/StegoVault/issues)
-- **Discussions**: Join our [GitHub Discussions](https://github.com/yourusername/StegoVault/discussions)
+- **Issues**: Report bugs on [GitHub Issues](https://github.com/mosh3eb/StegoVault/issues)
+- **Discussions**: Join our [GitHub Discussions](https://github.com/mosh3eb/StegoVault/discussions)
 - **Documentation**: Check the [docs](docs/) folder
 - **Examples**: Browse working examples in [examples](examples/)
 
@@ -283,7 +289,10 @@ Never use this tool for:
 
 ## 👨‍💻 Author
 
-**StegoVault** is maintained by the open-source community.
+**StegoVault** is maintained by [mosh3eb](https://github.com/mosh3eb)
+
+- GitHub: [@mosh3eb](https://github.com/mosh3eb)
+- PyPI: [stegovault](https://pypi.org/project/stegovault/)
 
 ---
 
